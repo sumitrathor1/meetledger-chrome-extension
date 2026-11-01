@@ -47,14 +47,15 @@
           'div[jsname="tJHJj"]'
         ],
 
-        // Participant name text element inside an item
+        // Participant name text element inside an item (strict participant classes, never aria-hidden icons)
         NAME_TEXT: [
           'span.zWGUib',
           'span.ZjFb7c',
+          'span[jsname="Wvd9Cc"]',
+          'div[jsname="Wvd9Cc"]',
+          'span.YVvGBb',
           'span[class*="name" i]',
           'div[class*="name" i]',
-          'span.YVvGBb',
-          'span[aria-hidden="true"]',
           'div[jsname="WsjYwc"]'
         ],
 
@@ -63,7 +64,11 @@
           'div[data-participant-id] span.notranslate',
           'div[data-self-name]',
           'div[data-requested-participant-id] span',
-          'div.cS7aqe'
+          'div.cS7aqe',
+          'span.notranslate',
+          'div.poVWob',
+          'div.jT5e98',
+          'div[data-name]'
         ],
 
         // Meeting title
@@ -154,13 +159,18 @@
     getMeetingTitle() {
       const el = this.queryFirst(this.SELECTORS.MEETING_TITLE);
       if (el && el.textContent && el.textContent.trim()) {
-        return el.textContent.trim();
+        const text = el.textContent.trim();
+        const lower = text.toLowerCase();
+        // Ignore generic Google Meet UI buttons like "Meeting details" or "Details"
+        if (lower !== 'meeting details' && lower !== 'details' && lower !== 'info' && text.length > 2) {
+          return text;
+        }
       }
 
       // Check document title e.g. "Meet - csd-class-mon"
       if (document.title && document.title.includes(' - ')) {
         const titlePart = document.title.split(' - ')[1];
-        if (titlePart && !titlePart.includes('Google Meet')) {
+        if (titlePart && !titlePart.includes('Google Meet') && !/^[a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{3}$/i.test(titlePart)) {
           return titlePart.trim();
         }
       }
@@ -198,6 +208,7 @@
      */
     scanVisibleParticipants() {
       const names = new Set();
+      const identity = global.MeetLedgerIdentity;
 
       // 1. Scan People panel list items if open
       const panel = this.queryFirst(this.SELECTORS.PEOPLE_PANEL);
@@ -205,12 +216,32 @@
         const items = this.queryAll(this.SELECTORS.PARTICIPANT_ITEM, panel);
         for (const item of items) {
           const nameEl = this.queryFirst(this.SELECTORS.NAME_TEXT, item);
-          const raw = nameEl ? nameEl.textContent : item.textContent;
+          let raw = '';
+
+          if (nameEl) {
+            // Check title attribute on nameEl or parent: Google Meet puts un-truncated full name in title when ellipsis is used!
+            const titleAttr = nameEl.getAttribute('title') || nameEl.parentElement?.getAttribute('title');
+            const ariaAttr = nameEl.getAttribute('aria-label') || item.getAttribute('aria-label');
+            const textContent = (nameEl.textContent || '').trim();
+
+            if (titleAttr && titleAttr.trim().length >= textContent.length) {
+              raw = titleAttr.trim();
+            } else if (ariaAttr && ariaAttr.trim().length >= textContent.length && !ariaAttr.includes(',')) {
+              raw = ariaAttr.trim();
+            } else {
+              raw = textContent;
+            }
+          } else if (item.hasAttribute('data-participant-id') || item.hasAttribute('data-requested-participant-id')) {
+            // Fallback only if item is explicitly a participant element
+            raw = item.getAttribute('data-self-name') || item.textContent;
+          }
+
           if (raw && raw.trim()) {
-            // First line of text is typically the participant name
             const firstLine = raw.trim().split('\n')[0].trim();
             if (firstLine && firstLine.length > 1) {
-              names.add(firstLine);
+              if (!identity || !identity.isUINoise(firstLine)) {
+                names.add(firstLine);
+              }
             }
           }
         }
@@ -219,11 +250,14 @@
       // 2. Also scan visible video/audio grid tiles
       const gridItems = this.queryAll(this.SELECTORS.GRID_TILE_NAME);
       for (const item of gridItems) {
-        const text = item.textContent || item.getAttribute('data-self-name');
+        // Tile text or data-self-name attribute
+        const text = item.getAttribute('data-self-name') || item.getAttribute('title') || item.textContent;
         if (text && text.trim()) {
           const firstLine = text.trim().split('\n')[0].trim();
           if (firstLine && firstLine.length > 1) {
-            names.add(firstLine);
+            if (!identity || !identity.isUINoise(firstLine)) {
+              names.add(firstLine);
+            }
           }
         }
       }

@@ -20,9 +20,14 @@
         .replace(/\(Presentation\)/gi, '')
         .replace(/\(Presenting\)/gi, '')
         .replace(/\(External\)/gi, '')
+        .replace(/\(Host\)/gi, '')
+        .replace(/\(Meeting host\)/gi, '')
+        .replace(/\(Co-host\)/gi, '')
         // Replace non-breaking spaces and redundant whitespaces
         .replace(/[\u00A0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]/g, ' ')
         .replace(/\s+/g, ' ')
+        // Remove trailing ellipsis if text was truncated in UI
+        .replace(/\.{2,}$|…$/g, '')
         .trim();
 
       return cleaned;
@@ -140,15 +145,76 @@
     },
 
     /**
+     * Checks if a string is Google Meet UI noise (buttons, icons, section headers)
+     * e.g. "devices", "add people", "in call", "more_vert"
+     */
+    isUINoise(rawText) {
+      if (!rawText || typeof rawText !== 'string') return true;
+      const cleaned = this.normalizeName(rawText).toLowerCase().trim();
+      if (cleaned.length < 2) return true;
+
+      const NOISE_WORDS = new Set([
+        'devices',
+        'device',
+        'other devices',
+        'companion devices',
+        'audio devices',
+        'phone audio',
+        'add people',
+        'in call',
+        'in this call',
+        'contributors',
+        'meeting host',
+        'host',
+        'co-host',
+        'host controls',
+        'search for people',
+        'search',
+        'more options',
+        'mute all',
+        'pin',
+        'unpin',
+        'more_vert',
+        'mic',
+        'mic_off',
+        'videocam',
+        'videocam_off',
+        'volume_up',
+        'phone',
+        'hand_raise',
+        'meeting details',
+        'details',
+        'chat',
+        'activities',
+        'info',
+        'everyone',
+        'presentation',
+        'you'
+      ]);
+
+      if (NOISE_WORDS.has(cleaned)) return true;
+
+      // Reject common material symbol icon names (single words without spaces that match icon verbs)
+      if (/^(more_vert|mic|mic_off|videocam|videocam_off|pin|unpin|volume_up|phone|devices|hand_raise)$/i.test(cleaned)) {
+        return true;
+      }
+
+      return false;
+    },
+
+    /**
      * Checks if a participant name or raw text should be excluded from attendance
-     * Checks user's exclusion list (e.g. "Sumit Rathor") case-insensitively
+     * Checks user's exclusion list (e.g. "Sumit Rathor") case-insensitively.
+     * If the attendee has an enrollment number (e.g. 0901CD243D04 SUMIT RATHOR),
+     * they are a student attending the class and are NOT excluded as host!
      * 
      * @param {string} name
      * @param {string} rawText
      * @param {string[]} excludedList
+     * @param {boolean} [hasEnrollment=false]
      * @returns {boolean}
      */
-    isExcluded(name, rawText, excludedList = ['Sumit Rathor']) {
+    isExcluded(name, rawText, excludedList = ['Sumit Rathor'], hasEnrollment = false) {
       if (!Array.isArray(excludedList)) {
         excludedList = [excludedList].filter(Boolean);
       }
@@ -156,13 +222,28 @@
       const n = (name || '').trim().toLowerCase();
       const r = (rawText || '').trim().toLowerCase();
 
-      // Check against exclusion list
+      // If attendee has a student enrollment number, they are a student to be tracked!
+      // They are only excluded if their enrollment or exact raw string was explicitly added to excludedList.
+      if (hasEnrollment) {
+        for (const ex of excludedList) {
+          const target = (ex || '').trim().toLowerCase();
+          if (!target) continue;
+          if (r === target) return true;
+        }
+        return false;
+      }
+
+      // Check against exclusion list for non-enrollment attendees
       for (const ex of excludedList) {
         const target = (ex || '').trim().toLowerCase();
         if (!target) continue;
-        if (n === target || r.includes(target) || n.includes(target)) {
-          return true;
-        }
+
+        // Exact match on normalized student name (e.g. "Sumit Rathor")
+        if (n === target) return true;
+
+        // Exact match on raw string after removing Google Meet indicators (e.g. "Sumit Rathor (You)")
+        const cleanRaw = this.normalizeName(r).toLowerCase();
+        if (cleanRaw === target) return true;
       }
 
       return false;

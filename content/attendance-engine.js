@@ -96,6 +96,14 @@
           isRejoin: false
         });
       } else {
+        // If we now have an un-truncated name or newly found enrollment, update the record
+        if (parsedData.name && parsedData.name.length > (record.name || '').length && !parsedData.name.endsWith('...')) {
+          record.name = parsedData.name;
+        }
+        if (parsedData.enrollment && !record.enrollment) {
+          record.enrollment = parsedData.enrollment;
+        }
+
         // Participant rejoining after a previous departure
         record.status = 'present';
         record.lastLeftAt = null;

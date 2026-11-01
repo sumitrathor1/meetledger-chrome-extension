@@ -131,7 +131,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeState = state;
 
     const m = state.meeting;
-    if (meetingTitle) meetingTitle.textContent = m.title || `Meet (${m.meetingCode})`;
+    if (meetingTitle) {
+      const isGeneric = !m.title || m.title.toLowerCase() === 'meeting details' || m.title.toLowerCase() === 'details';
+      meetingTitle.textContent = isGeneric ? `Meet (${m.meetingCode || 'Live'})` : m.title;
+    }
     if (meetingCode) meetingCode.textContent = m.meetingCode || '-';
 
     if (statPresent) statPresent.textContent = m.presentCount || 0;

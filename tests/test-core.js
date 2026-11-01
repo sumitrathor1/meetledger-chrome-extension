@@ -102,10 +102,29 @@ it('does not mistake honorifics (Dr, Prof) as enrollment numbers', () => {
   assert.strictEqual(res.key, 'name:dr._alan_turing');
 });
 
-it('excludes host name (Sumit Rathor) case-insensitively', () => {
-  assert.strictEqual(Identity.isExcluded('Sumit Rathor', 'Sumit Rathor', ['Sumit Rathor']), true);
-  assert.strictEqual(Identity.isExcluded('sumit rathor', 'sumit rathor (You)', ['Sumit Rathor']), true);
-  assert.strictEqual(Identity.isExcluded('ASHISH SINGH', 'ASHISH SINGH', ['Sumit Rathor']), false);
+it('excludes host name (Sumit Rathor) case-insensitively when no enrollment is present', () => {
+  assert.strictEqual(Identity.isExcluded('Sumit Rathor', 'Sumit Rathor', ['Sumit Rathor'], false), true);
+  assert.strictEqual(Identity.isExcluded('sumit rathor', 'sumit rathor (You)', ['Sumit Rathor'], false), true);
+  assert.strictEqual(Identity.isExcluded('ASHISH SINGH', 'ASHISH SINGH', ['Sumit Rathor'], false), false);
+  assert.strictEqual(Identity.isExcluded('Kamlesh Rathor', 'Kamlesh Rathor', ['Sumit Rathor'], false), false);
+});
+
+it('does NOT exclude a participant with roll number even if their name matches host name (0901CD243D04 SUMIT RATHOR)', () => {
+  const raw = '0901CD243D04 SUMIT RATHOR';
+  const res = Identity.extractEnrollmentAndName(raw);
+  assert.strictEqual(res.enrollment, '0901CD243D04');
+  assert.strictEqual(res.name, 'SUMIT RATHOR');
+  const hasEnrollment = Boolean(res.enrollment);
+  assert.strictEqual(Identity.isExcluded(res.name, raw, ['Sumit Rathor'], hasEnrollment), false);
+});
+
+it('identifies Google Meet UI noise and icon ligatures (e.g. devices, add people, more_vert)', () => {
+  assert.strictEqual(Identity.isUINoise('devices'), true);
+  assert.strictEqual(Identity.isUINoise('add people'), true);
+  assert.strictEqual(Identity.isUINoise('more_vert'), true);
+  assert.strictEqual(Identity.isUINoise('in call'), true);
+  assert.strictEqual(Identity.isUINoise('Kamlesh Rathor'), false);
+  assert.strictEqual(Identity.isUINoise('0901CD243D04 SUMIT RATHOR'), false);
 });
 
 it('generates unique meeting session IDs for the same meeting code', () => {

@@ -190,7 +190,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const m = state.meeting;
     const timeUtils = window.MeetLedgerTimeUtils;
 
-    if (meetingTitle) meetingTitle.textContent = m.title || `Meet (${m.meetingCode})`;
+    if (meetingTitle) {
+      const isGeneric = !m.title || m.title.toLowerCase() === 'meeting details' || m.title.toLowerCase() === 'details';
+      meetingTitle.textContent = isGeneric ? `Meet (${m.meetingCode || 'Live'})` : m.title;
+    }
     if (meetingCode) meetingCode.textContent = m.meetingCode || '-';
     if (meetingTimer) {
       meetingTimer.textContent = timeUtils ? timeUtils.formatDigitalTimer(m.durationSeconds || 0) : '00:00';

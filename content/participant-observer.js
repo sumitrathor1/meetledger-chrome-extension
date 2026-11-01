@@ -136,11 +136,16 @@
 
       // 1. Process all participants found in this scan
       for (const raw of rawNames) {
+        if (!raw || (identity.isUINoise && identity.isUINoise(raw))) continue;
+
         const parsed = identity.extractEnrollmentAndName(raw, pattern);
         if (!parsed.name && !parsed.enrollment) continue;
 
-        // Check if excluded (Host or user exclusion)
-        if (identity.isExcluded(parsed.name, raw, excludedList)) {
+        const hasEnrollment = Boolean(parsed.enrollment && parsed.enrollment.trim());
+
+        // Check if excluded (Host or user exclusion). Note: If attendee has a student enrollment,
+        // they are NOT excluded as host.
+        if (identity.isExcluded(parsed.name, raw, excludedList, hasEnrollment)) {
           continue;
         }
 
@@ -152,6 +157,13 @@
           const entry = this.absenceMap.get(key);
           entry.missedScans = 0;
           entry.lastSeen = currentScanTime;
+          // If we now have an un-truncated name or enrollment, update entry.data
+          if (parsed.name && parsed.name.length > (entry.data?.name || '').length) {
+            entry.data.name = parsed.name;
+          }
+          if (parsed.enrollment && !entry.data?.enrollment) {
+            entry.data.enrollment = parsed.enrollment;
+          }
         } else {
           this.absenceMap.set(key, {
             missedScans: 0,
