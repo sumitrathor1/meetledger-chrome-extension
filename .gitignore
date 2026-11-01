@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment and IDE
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# Chrome Extension Packaged zips
+*.zip
+*.crx
+

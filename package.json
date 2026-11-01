@@ -1,0 +1,24 @@
+{
+  "name": "meetledger-chrome-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/test-core.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sumitrathor1/meetledger-chrome-extension.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sumitrathor1/meetledger-chrome-extension/issues"
+  },
+  "homepage": "https://github.com/sumitrathor1/meetledger-chrome-extension#readme",
+  "description": "",
+  "dependencies": {
+    "chart.js": "^4.6.1",
+    "lucide": "^1.66.0"
+  }
+}
