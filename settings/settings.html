@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeetLedger - Settings</title>
+  <link rel="stylesheet" href="settings.css">
+  <link rel="icon" type="image/png" href="../assets/icons/icon-32.png">
+</head>
+<body>
+  <div class="settings-container">
+    <header class="settings-header">
+      <div class="brand">
+        <img src="../assets/icons/icon-32.png" alt="MeetLedger" width="32" height="32">
+        <div>
+          <h1>MeetLedger Settings</h1>
+          <p>Configure attendance rules, student identity extraction, and local storage</p>
+        </div>
+      </div>
+      <button id="btn-back-dashboard" class="btn btn-secondary">
+        Return to Dashboard
+      </button>
+    </header>
+
+    <main class="settings-main">
+      <!-- Section 1: Host & Personal -->
+      <section class="settings-card">
+        <h2>Host & Personal Settings</h2>
+        <div class="form-group">
+          <label for="opt-host-name">Meeting Host Name</label>
+          <input type="text" id="opt-host-name" class="input-text" placeholder="e.g. Sumit Rathor">
+          <span class="hint">The name used in your Google Meet profile</span>
+        </div>
+        <div class="form-group">
+          <label for="opt-excluded-names">Excluded Participant Names</label>
+          <input type="text" id="opt-excluded-names" class="input-text" placeholder="Sumit Rathor, Co-host, Moderator">
+          <span class="hint">Comma-separated names to ignore from attendance tracking</span>
+        </div>
+        <div class="form-group">
+          <label for="opt-time-format">Time Display Format</label>
+          <select id="opt-time-format" class="input-select">
+            <option value="12h">12-Hour (10:05:20 AM)</option>
+            <option value="24h">24-Hour (10:05:20)</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Section 2: Attendance Tracking Rules -->
+      <section class="settings-card">
+        <h2>Attendance Tracking Rules</h2>
+        <div class="form-group switch-group">
+          <div>
+            <label>Automatic Attendance Tracking</label>
+            <span class="hint">Begin scanning Google Meet participants immediately when joining a call</span>
+          </div>
+          <input type="checkbox" id="opt-auto-track" class="input-checkbox">
+        </div>
+        <div class="form-group">
+          <label for="opt-scan-interval">DOM Polling Interval (Milliseconds)</label>
+          <input type="number" id="opt-scan-interval" class="input-text" min="1000" max="10000" step="500">
+          <span class="hint">Frequency to check participant list (Default: 3000 ms)</span>
+        </div>
+        <div class="form-group">
+          <label for="opt-grace-period">Leave Grace Confirmation (Seconds)</label>
+          <input type="number" id="opt-grace-period" class="input-text" min="5" max="60" step="5">
+          <span class="hint">Absence confirmation window to avoid virtualization glitches (Default: 15s)</span>
+        </div>
+        <div class="form-group">
+          <label for="opt-late-threshold">Late Arrival Threshold (Minutes)</label>
+          <input type="number" id="opt-late-threshold" class="input-text" min="1" max="60">
+          <span class="hint">Minutes elapsed after start time before a student is flagged as late (Default: 5m)</span>
+        </div>
+      </section>
+
+      <!-- Section 3: Enrollment Extraction -->
+      <section class="settings-card">
+        <h2>Enrollment & Roll Number Extraction</h2>
+        <div class="form-group">
+          <label for="opt-enrollment-pattern">Custom Regular Expression Pattern</label>
+          <input type="text" id="opt-enrollment-pattern" class="input-text" placeholder="^([A-Z0-9]{6,16})\s+(.+)$">
+          <span class="hint">Standard format: Group 1 = Roll Number, Group 2 = Student Name</span>
+        </div>
+        <div class="regex-test-box">
+          <label>Test Student Name String</label>
+          <input type="text" id="opt-test-input" class="input-text" placeholder="Paste sample: BTMC25O1026 ASHISH SINGH RAJPUT">
+          <div id="opt-test-output" class="test-output">Extracted: [Enrollment: -] [Name: -]</div>
+        </div>
+      </section>
+
+      <!-- Section 4: Data & Backup -->
+      <section class="settings-card">
+        <h2>Local Data Management</h2>
+        <p class="section-desc">All attendance data is stored locally in your browser's IndexedDB storage for 100% privacy.</p>
+        <div class="btn-group">
+          <button id="opt-btn-export-backup" class="btn btn-secondary">Export Full Backup JSON</button>
+          <label class="btn btn-secondary file-btn">
+            Restore Backup
+            <input type="file" id="opt-input-file" accept=".json" style="display:none;">
+          </label>
+          <button id="opt-btn-clear" class="btn btn-danger">Delete All Data</button>
+        </div>
+      </section>
+
+      <div class="settings-actions">
+        <button id="opt-btn-save" class="btn btn-primary btn-large">
+          Save Settings
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <div id="settings-toast" class="toast"></div>
+
+  <script src="../shared/constants.js"></script>
+  <script src="../shared/time-utils.js"></script>
+  <script src="../shared/identity.js"></script>
+  <script src="../shared/database.js"></script>
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/export.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>
+

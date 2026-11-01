@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeetLedger - Google Meet Attendance & Meeting Analytics</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="icon" type="image/png" href="../assets/icons/icon-32.png">
+</head>
+<body data-theme="light">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-logo">
+            <img src="../assets/icons/icon-32.png" alt="MeetLedger" width="28" height="28">
+          </div>
+          <div class="brand-info">
+            <h1 class="brand-name">MeetLedger</h1>
+            <span class="brand-tagline">Attendance & Analytics</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="overview">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Overview</span>
+        </button>
+        <button class="nav-item" data-page="meetings">
+          <i data-lucide="video"></i>
+          <span>All Meetings</span>
+        </button>
+        <button class="nav-item" data-page="live">
+          <i data-lucide="radio"></i>
+          <span>Live Meeting</span>
+          <span id="live-indicator-badge" class="badge-pill hidden">LIVE</span>
+        </button>
+        <button class="nav-item" data-page="participants">
+          <i data-lucide="users"></i>
+          <span>Participants</span>
+        </button>
+        <button class="nav-item" data-page="reports">
+          <i data-lucide="file-text"></i>
+          <span>Reports & Export</span>
+        </button>
+        <button class="nav-item" data-page="analytics">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics</span>
+        </button>
+        
+        <div class="nav-divider"></div>
+
+        <button class="nav-item" data-page="settings">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </button>
+        <button class="nav-item" data-page="about">
+          <i data-lucide="info"></i>
+          <span>About</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <div class="avatar-dot"></div>
+          <div class="user-info">
+            <span id="sidebar-host-name" class="user-name">Sumit Rathor</span>
+            <span class="user-role">Meeting Host</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Shell -->
+    <div class="main-shell">
+      <!-- Top Navbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h2 id="page-title" class="current-page-title">Overview</h2>
+        </div>
+        <div class="topbar-right">
+          <button id="theme-toggle" class="btn-icon" title="Toggle Light / Dark Mode">
+            <i data-lucide="sun" id="theme-icon"></i>
+          </button>
+          <button id="btn-quick-new-meeting" class="btn btn-secondary">
+            <i data-lucide="external-link"></i>
+            <span>Google Meet</span>
+          </button>
+          <button id="btn-quick-export" class="btn btn-primary">
+            <i data-lucide="download"></i>
+            <span>Export Data</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Main Container -->
+      <main class="page-container">
+        
+        <!-- PAGE 1: OVERVIEW -->
+        <section id="page-overview" class="page-section active">
+          <!-- Summary Metrics Cards -->
+          <div class="metrics-row">
+            <div class="summary-card">
+              <div class="card-meta">
+                <span class="card-label">Total Meetings</span>
+                <div class="card-icon bg-indigo"><i data-lucide="video"></i></div>
+              </div>
+              <div class="card-val" id="metric-total-meetings">0</div>
+              <div class="card-foot">Tracked meeting sessions</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-meta">
+                <span class="card-label">Unique Participants</span>
+                <div class="card-icon bg-blue"><i data-lucide="users"></i></div>
+              </div>
+              <div class="card-val" id="metric-total-students">0</div>
+              <div class="card-foot">Distinct attendees</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-meta">
+                <span class="card-label">Attendance Records</span>
+                <div class="card-icon bg-emerald"><i data-lucide="check-circle-2"></i></div>
+              </div>
+              <div class="card-val" id="metric-total-records">0</div>
+              <div class="card-foot">Individual attendee logs</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-meta">
+                <span class="card-label">Avg Attendance Rate</span>
+                <div class="card-icon bg-purple"><i data-lucide="percent"></i></div>
+              </div>
+              <div class="card-val" id="metric-avg-attendance">0%</div>
+              <div class="card-foot">Meeting duration coverage</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-meta">
+                <span class="card-label">Total Meeting Hours</span>
+                <div class="card-icon bg-amber"><i data-lucide="clock"></i></div>
+              </div>
+              <div class="card-val" id="metric-total-hours">0h</div>
+              <div class="card-foot">Cumulative session time</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-meta">
+                <span class="card-label">Active Meetings</span>
+                <div class="card-icon bg-rose"><i data-lucide="radio"></i></div>
+              </div>
+              <div class="card-val" id="metric-active-meetings">0</div>
+              <div class="card-foot">Currently ongoing in tabs</div>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="charts-grid">
+            <div class="chart-card span-2">
+              <div class="card-header">
+                <h3>Meeting Attendance Over Time</h3>
+                <span class="chart-sub">Participant attendance volume per session</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chart-attendance-history" height="120"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="card-header">
+                <h3>Status Distribution</h3>
+                <span class="chart-sub">Present vs Left status</span>
+              </div>
+              <div class="chart-body flex-center">
+                <canvas id="chart-status-pie" height="180"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Second Charts & Recent Meetings Row -->
+          <div class="content-split-grid">
+            <div class="card recent-meetings-card">
+              <div class="card-header space-between">
+                <div>
+                  <h3>Recent Meetings</h3>
+                  <span class="chart-sub">Latest attendance sessions</span>
+                </div>
+                <button class="btn-link" id="link-view-all-meetings">View All</button>
+              </div>
+              <div class="table-wrap">
+                <table class="data-table" id="table-recent-meetings">
+                  <thead>
+                    <tr>
+                      <th>Meeting Name</th>
+                      <th>Code</th>
+                      <th>Date</th>
+                      <th>Duration</th>
+                      <th>Participants</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody-recent-meetings">
+                    <tr><td colspan="7" class="text-center">No meetings conducted yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card top-students-card">
+              <div class="card-header">
+                <h3>Top Attendees</h3>
+                <span class="chart-sub">Highest cumulative attendance duration</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chart-top-students" height="160"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 2: ALL MEETINGS -->
+        <section id="page-meetings" class="page-section">
+          <div class="section-toolbar">
+            <div class="filter-group">
+              <div class="search-box">
+                <i data-lucide="search"></i>
+                <input type="text" id="meetings-search-input" placeholder="Search by meeting name or code...">
+              </div>
+              <select id="meetings-filter-status" class="select-input">
+                <option value="all">All Statuses</option>
+                <option value="completed">Completed</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="interrupted">Interrupted</option>
+              </select>
+              <input type="date" id="meetings-filter-date" class="date-input" title="Filter by date">
+            </div>
+            <button id="meetings-btn-refresh" class="btn btn-secondary">
+              <i data-lucide="refresh-cw"></i>
+              <span>Refresh</span>
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-wrap">
+              <table class="data-table" id="table-all-meetings">
+                <thead>
+                  <tr>
+                    <th>Meeting Title</th>
+                    <th>Code</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                    <th>Participants</th>
+                    <th>Avg %</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-all-meetings">
+                  <tr><td colspan="10" class="text-center">Loading meetings...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 3: MEETING DETAILS (SUB-VIEW) -->
+        <section id="page-meeting-detail" class="page-section">
+          <div class="detail-back-bar">
+            <button id="btn-back-to-meetings" class="btn btn-secondary">
+              <i data-lucide="arrow-left"></i>
+              <span>Back to Meetings</span>
+            </button>
+            <div class="detail-actions">
+              <button id="btn-detail-export-csv" class="btn btn-secondary">
+                <i data-lucide="file-spreadsheet"></i>
+                <span>Export Summary CSV</span>
+              </button>
+              <button id="btn-detail-export-detailed" class="btn btn-secondary">
+                <i data-lucide="list-checks"></i>
+                <span>Export Intervals CSV</span>
+              </button>
+              <button id="btn-detail-print" class="btn btn-primary">
+                <i data-lucide="printer"></i>
+                <span>Print Attendance Sheet</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Meeting Metadata Banner -->
+          <div class="meeting-detail-banner card">
+            <div class="banner-top">
+              <div>
+                <h2 id="detail-meeting-title" class="detail-title">Meeting Title</h2>
+                <div class="banner-sub">
+                  <span id="detail-meeting-code" class="code-pill">abc-defg-hij</span>
+                  <span id="detail-meeting-date" class="meta-pill">Date</span>
+                  <span id="detail-meeting-status" class="status-pill completed">COMPLETED</span>
+                </div>
+              </div>
+              <button id="btn-edit-meeting-title" class="btn-icon" title="Edit Meeting Title">
+                <i data-lucide="edit-2"></i>
+              </button>
+            </div>
+
+            <div class="banner-metrics">
+              <div class="b-metric">
+                <span class="bm-label">Start Time</span>
+                <span id="detail-start-time" class="bm-val">-</span>
+              </div>
+              <div class="b-metric">
+                <span class="bm-label">End Time</span>
+                <span id="detail-end-time" class="bm-val">-</span>
+              </div>
+              <div class="b-metric">
+                <span class="bm-label">Total Duration</span>
+                <span id="detail-duration" class="bm-val">-</span>
+              </div>
+              <div class="b-metric">
+                <span class="bm-label">Tracked Attendees</span>
+                <span id="detail-total-attendees" class="bm-val">0</span>
+              </div>
+              <div class="b-metric">
+                <span class="bm-label">Average Attendance %</span>
+                <span id="detail-avg-percentage" class="bm-val">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Participants Table in Meeting -->
+          <div class="card">
+            <div class="card-header space-between">
+              <h3>Attendance Records</h3>
+              <input type="text" id="detail-participant-search" placeholder="Search by name or enrollment..." class="search-input">
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="table-meeting-participants">
+                <thead>
+                  <tr>
+                    <th>Enrollment</th>
+                    <th>Participant Name</th>
+                    <th>First Join</th>
+                    <th>Last Leave</th>
+                    <th>Total Duration</th>
+                    <th>Sessions</th>
+                    <th>Attendance %</th>
+                    <th>Status</th>
+                    <th>Intervals</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-meeting-participants">
+                  <tr><td colspan="9" class="text-center">Loading participants...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 4: LIVE MEETING -->
+        <section id="page-live" class="page-section">
+          <div id="live-no-meeting-card" class="card empty-container">
+            <div class="empty-icon-circle">
+              <i data-lucide="radio"></i>
+            </div>
+            <h3>No Live Meeting Connected</h3>
+            <p>Join an active Google Meet session in Chrome to view real-time live attendance analytics.</p>
+            <button id="btn-live-launch-meet" class="btn btn-primary">
+              <i data-lucide="video"></i>
+              <span>Open Google Meet</span>
+            </button>
+          </div>
+
+          <div id="live-active-container" class="live-active-wrapper hidden">
+            <!-- Live Meeting Controls & Info -->
+            <div class="card live-header-card">
+              <div class="live-meta">
+                <div class="live-pill-tag">
+                  <span class="pulse-dot"></span>
+                  <span>LIVE TRACKING</span>
+                </div>
+                <h2 id="live-title">CSD Class - Monday</h2>
+                <div class="live-codes">
+                  <span id="live-code" class="code-pill">abc-defg-hij</span>
+                  <span id="live-timer" class="timer-pill">00:00:00</span>
+                </div>
+              </div>
+              <div class="live-actions">
+                <button id="btn-live-scan" class="btn btn-secondary">
+                  <i data-lucide="refresh-cw"></i>
+                  <span>Scan Now</span>
+                </button>
+                <button id="btn-live-pause" class="btn btn-secondary">
+                  <i data-lucide="pause"></i>
+                  <span id="live-pause-text">Pause</span>
+                </button>
+                <button id="btn-live-stop" class="btn btn-danger">
+                  <i data-lucide="square"></i>
+                  <span>Stop Meeting</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Participants Table -->
+            <div class="card">
+              <div class="card-header space-between">
+                <h3>Live Attendees (<span id="live-present-count">0</span> Present)</h3>
+                <input type="text" id="live-search-input" placeholder="Filter attendees..." class="search-input">
+              </div>
+              <div class="table-wrap">
+                <table class="data-table" id="table-live-participants">
+                  <thead>
+                    <tr>
+                      <th>Enrollment</th>
+                      <th>Name</th>
+                      <th>First Join</th>
+                      <th>Current Duration</th>
+                      <th>Sessions</th>
+                      <th>Attendance %</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody-live-participants">
+                    <tr><td colspan="7" class="text-center">Awaiting attendance data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 5: PARTICIPANTS DIRECTORY -->
+        <section id="page-participants" class="page-section">
+          <div class="section-toolbar">
+            <div class="search-box wide">
+              <i data-lucide="search"></i>
+              <input type="text" id="participants-search-input" placeholder="Search by name, roll number, or enrollment...">
+            </div>
+            <button id="btn-merge-participants-modal" class="btn btn-secondary">
+              <i data-lucide="git-merge"></i>
+              <span>Merge Duplicate Identities</span>
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-wrap">
+              <table class="data-table" id="table-global-participants">
+                <thead>
+                  <tr>
+                    <th>Enrollment</th>
+                    <th>Participant Name</th>
+                    <th>Meetings Attended</th>
+                    <th>Last Attended Date</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-global-participants">
+                  <tr><td colspan="5" class="text-center">Loading participants directory...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 6: REPORTS & EXPORT -->
+        <section id="page-reports" class="page-section">
+          <div class="reports-container">
+            <div class="card report-config-card">
+              <div class="card-header">
+                <h3>Generate Attendance Report</h3>
+                <span class="chart-sub">Export or print comprehensive attendance records</span>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Select Meeting</label>
+                  <select id="report-select-meeting" class="select-input">
+                    <option value="all">All Meetings (Consolidated)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Start Date</label>
+                  <input type="date" id="report-start-date" class="date-input">
+                </div>
+                <div class="form-group">
+                  <label>End Date</label>
+                  <input type="date" id="report-end-date" class="date-input">
+                </div>
+                <div class="form-group">
+                  <label>Min. Attendance %</label>
+                  <input type="number" id="report-min-pct" class="text-input" value="0" min="0" max="100">
+                </div>
+              </div>
+
+              <div class="report-actions-row">
+                <button id="btn-report-csv-summary" class="btn btn-primary">
+                  <i data-lucide="file-spreadsheet"></i>
+                  <span>Download Summary CSV</span>
+                </button>
+                <button id="btn-report-csv-detailed" class="btn btn-secondary">
+                  <i data-lucide="list-checks"></i>
+                  <span>Download Detailed Intervals CSV</span>
+                </button>
+                <button id="btn-report-json" class="btn btn-secondary">
+                  <i data-lucide="code"></i>
+                  <span>Export JSON</span>
+                </button>
+                <button id="btn-report-print" class="btn btn-secondary">
+                  <i data-lucide="printer"></i>
+                  <span>Print-Ready View</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Report Preview -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Report Preview</h3>
+              </div>
+              <div class="table-wrap">
+                <table class="data-table" id="table-report-preview">
+                  <thead>
+                    <tr>
+                      <th>Meeting</th>
+                      <th>Date</th>
+                      <th>Enrollment</th>
+                      <th>Name</th>
+                      <th>First Join</th>
+                      <th>Last Leave</th>
+                      <th>Duration</th>
+                      <th>Sessions</th>
+                      <th>%</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody-report-preview">
+                    <tr><td colspan="9" class="text-center">Select criteria and click download or preview.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 7: ADVANCED ANALYTICS -->
+        <section id="page-analytics" class="page-section">
+          <div class="analytics-toolbar">
+            <div class="card-header">
+              <h3>Attendance Analytics & Insights</h3>
+              <span class="chart-sub">Performance trends, late arrival metrics, and consistency analysis</span>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-card span-2">
+              <div class="card-header">
+                <h3>Attendance Volume Trends</h3>
+              </div>
+              <div class="chart-body">
+                <canvas id="chart-analytics-volume" height="130"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="card-header">
+                <h3>Late Arrival Rate</h3>
+              </div>
+              <div class="chart-body flex-center">
+                <canvas id="chart-analytics-late" height="180"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card span-3">
+              <div class="card-header">
+                <h3>Participant Attendance Consistency</h3>
+                <span class="chart-sub">Distribution of attendance percentage brackets</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chart-analytics-consistency" height="110"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 8: SETTINGS -->
+        <section id="page-settings" class="page-section">
+          <div class="settings-grid">
+            <!-- Personal Settings -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Personal & Host Settings</h3>
+              </div>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label for="setting-host-name">Host Name</label>
+                  <input type="text" id="setting-host-name" class="text-input" placeholder="e.g. Sumit Rathor">
+                  <span class="field-hint">Your name as it appears in Google Meet</span>
+                </div>
+                <div class="form-group">
+                  <label for="setting-excluded-names">Excluded Names (Comma separated)</label>
+                  <input type="text" id="setting-excluded-names" class="text-input" placeholder="e.g. Sumit Rathor, Teacher Assistant">
+                  <span class="field-hint">Participants who will never be counted in attendance</span>
+                </div>
+                <div class="form-group">
+                  <label for="setting-time-format">Time Format</label>
+                  <select id="setting-time-format" class="select-input">
+                    <option value="12h">12-Hour (10:05 AM)</option>
+                    <option value="24h">24-Hour (10:05:00)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Attendance Tracking Settings -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Attendance Tracking Rules</h3>
+              </div>
+              <div class="settings-form">
+                <div class="form-group switch-group">
+                  <div>
+                    <label>Auto-Track Meetings</label>
+                    <span class="field-hint">Automatically begin tracking when entering Google Meet</span>
+                  </div>
+                  <input type="checkbox" id="setting-auto-track" class="toggle-switch">
+                </div>
+                <div class="form-group">
+                  <label for="setting-scan-interval">DOM Polling Scan Interval (ms)</label>
+                  <input type="number" id="setting-scan-interval" class="text-input" min="1000" max="10000" step="500">
+                  <span class="field-hint">Default: 3000 ms</span>
+                </div>
+                <div class="form-group">
+                  <label for="setting-grace-period">Leave Confirmation Grace Period (seconds)</label>
+                  <input type="number" id="setting-grace-period" class="text-input" min="5" max="60" step="5">
+                  <span class="field-hint">Prevents false departures due to virtualized DOM scrolling (Default: 15s)</span>
+                </div>
+                <div class="form-group">
+                  <label for="setting-late-threshold">Late Arrival Threshold (minutes)</label>
+                  <input type="number" id="setting-late-threshold" class="text-input" min="1" max="60">
+                  <span class="field-hint">Joining after this threshold marks student as late</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Identity & Enrollment Extraction -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Identity & Enrollment Extraction</h3>
+              </div>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label for="setting-enrollment-pattern">Enrollment Number Regex Pattern</label>
+                  <input type="text" id="setting-enrollment-pattern" class="text-input" placeholder="^([A-Z0-9]{6,16})\s+(.+)$">
+                  <span class="field-hint">Capture group 1 = Enrollment, group 2 = Name</span>
+                </div>
+                <div class="tester-box">
+                  <label>Pattern Tester</label>
+                  <input type="text" id="test-enrollment-input" class="text-input" placeholder="Try: BTMC25O1026 ASHISH SINGH RAJPUT">
+                  <div id="test-enrollment-result" class="test-result-box">Extracted: [Enrollment: -] [Name: -]</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Storage & Backup -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Data Management & Storage</h3>
+              </div>
+              <div class="settings-form">
+                <div class="storage-info-row">
+                  <span>Storage Engine: <strong>Local IndexedDB</strong></span>
+                  <span id="storage-record-count">0 Records stored</span>
+                </div>
+                <div class="btn-row">
+                  <button id="btn-backup-export" class="btn btn-secondary">
+                    <i data-lucide="download"></i>
+                    <span>Export Full JSON Backup</span>
+                  </button>
+                  <label class="btn btn-secondary file-label">
+                    <i data-lucide="upload"></i>
+                    <span>Restore Backup</span>
+                    <input type="file" id="input-backup-file" accept=".json" style="display:none;">
+                  </label>
+                  <button id="btn-clear-all-data" class="btn btn-danger">
+                    <i data-lucide="trash-2"></i>
+                    <span>Clear All Records</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-save-bar">
+            <button id="btn-save-settings" class="btn btn-primary">
+              <i data-lucide="save"></i>
+              <span>Save All Settings</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- PAGE 9: ABOUT -->
+        <section id="page-about" class="page-section">
+          <div class="about-card card">
+            <div class="about-hero">
+              <img src="../assets/icons/icon-128.png" alt="MeetLedger Logo" width="64" height="64">
+              <h2>MeetLedger – Google Meet Attendance & Meeting Analytics</h2>
+              <p class="about-tagline">Smart Meetings. Accurate Attendance. Complete Insights.</p>
+              <span class="version-tag">Version 1.0.0 &bull; Manifest V3</span>
+            </div>
+
+            <div class="about-content">
+              <h3>Features & Architecture</h3>
+              <ul class="feature-bullets">
+                <li><strong>Multi-Session Tracking:</strong> Tracks multiple join/leave events per participant and calculates actual non-overlapping attendance durations.</li>
+                <li><strong>Resilient DOM Adapter:</strong> Uses multi-fallback selectors to adapt to Google Meet UI updates.</li>
+                <li><strong>Anti-Virtualization Grace Engine:</strong> Uses a configurable 15s absence grace threshold to eliminate false departures during scroll virtualization.</li>
+                <li><strong>Enrollment Recognition:</strong> Automatic extraction of university/college roll numbers and configurable regex parsing.</li>
+                <li><strong>Multi-Meeting Isolation:</strong> Generates unique session identifiers preventing collisions when reusing meeting codes.</li>
+                <li><strong>100% Local-First Privacy:</strong> Attendance data never leaves your browser. Zero tracking telemetry or audio/video recording.</li>
+              </ul>
+
+              <div class="about-footer-links">
+                <a href="https://github.com/sumitrathor1/meetledger-chrome-extension" target="_blank" class="github-link">
+                  <i data-lucide="github"></i>
+                  <span>GitHub Repository: sumitrathor1/meetledger-chrome-extension</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL 1: ATTENDANCE INTERVALS TIMELINE MODAL -->
+  <div id="modal-intervals" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-intervals-name">Participant Attendance Sessions</h3>
+          <span id="modal-intervals-sub" class="modal-sub">BTMC25O1026 &bull; ASHISH SINGH RAJPUT</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal="modal-intervals">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="intervals-summary-grid">
+          <div class="i-card">
+            <span class="i-label">Total Duration</span>
+            <span id="modal-total-duration" class="i-val">-</span>
+          </div>
+          <div class="i-card">
+            <span class="i-label">Sessions Count</span>
+            <span id="modal-sessions-count" class="i-val">-</span>
+          </div>
+          <div class="i-card">
+            <span class="i-label">Attendance %</span>
+            <span id="modal-attendance-pct" class="i-val">-</span>
+          </div>
+        </div>
+
+        <h4 class="timeline-title">Session Interval Breakdown</h4>
+        <div id="modal-intervals-timeline" class="intervals-timeline">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="modal-intervals">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: EDIT PARTICIPANT MODAL -->
+  <div id="modal-edit-participant" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Participant Identity</h3>
+        <button class="modal-close-btn" data-close-modal="modal-edit-participant">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-participant-id">
+        <div class="form-group">
+          <label for="edit-participant-enrollment">Enrollment / Roll Number</label>
+          <input type="text" id="edit-participant-enrollment" class="text-input" placeholder="e.g. BTMC25O1026">
+        </div>
+        <div class="form-group">
+          <label for="edit-participant-name">Full Name</label>
+          <input type="text" id="edit-participant-name" class="text-input" placeholder="e.g. ASHISH SINGH RAJPUT">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="modal-edit-participant">Cancel</button>
+        <button id="btn-save-participant" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: MERGE PARTICIPANTS MODAL -->
+  <div id="modal-merge-participants" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Merge Duplicate Participant Identities</h3>
+        <button class="modal-close-btn" data-close-modal="modal-merge-participants">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Combine duplicate records into a single identity across all meeting attendance history.</p>
+        <div class="form-group">
+          <label for="merge-source-select">Source Identity (Will be merged and removed)</label>
+          <select id="merge-source-select" class="select-input"></select>
+        </div>
+        <div class="form-group">
+          <label for="merge-target-select">Target Identity (Will keep all attendance history)</label>
+          <select id="merge-target-select" class="select-input"></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="modal-merge-participants">Cancel</button>
+        <button id="btn-confirm-merge" class="btn btn-danger">Confirm Merge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: EDIT MEETING TITLE MODAL -->
+  <div id="modal-edit-meeting" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Meeting Title</h3>
+        <button class="modal-close-btn" data-close-modal="modal-edit-meeting">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-meeting-id">
+        <div class="form-group">
+          <label for="edit-meeting-title-input">Meeting Title</label>
+          <input type="text" id="edit-meeting-title-input" class="text-input" placeholder="e.g. CSD Class - Monday">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="modal-edit-meeting">Cancel</button>
+        <button id="btn-save-meeting-title" class="btn btn-primary">Save Title</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="dashboard-toast" class="toast"></div>
+
+  <!-- Local Vendor Scripts -->
+  <script src="../assets/vendor/chart.umd.min.js"></script>
+  <script src="../assets/vendor/lucide.min.js"></script>
+
+  <!-- Core Modules -->
+  <script src="../shared/constants.js"></script>
+  <script src="../shared/time-utils.js"></script>
+  <script src="../shared/identity.js"></script>
+  <script src="../shared/database.js"></script>
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/export.js"></script>
+
+  <!-- Dashboard Feature Modules -->
+  <script src="meetings.js"></script>
+  <script src="participants.js"></script>
+  <script src="reports.js"></script>
+  <script src="analytics.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
+
