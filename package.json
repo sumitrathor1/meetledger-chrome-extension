@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "node tests/test-core.js"
+    "test": "node tests/test-core.js && node tests/test-ai.js",
+    "test:core": "node tests/test-core.js",
+    "test:ai": "node tests/test-ai.js"
   },
   "repository": {
     "type": "git",

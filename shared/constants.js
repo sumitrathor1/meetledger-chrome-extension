@@ -25,7 +25,10 @@
       theme: 'system', // 'light' | 'dark' | 'system'
       timezone: 'local',
       dateFormat: 'YYYY-MM-DD',
-      timeFormat: '12h'
+      timeFormat: '12h',
+      geminiApiKey: '',
+      aiModel: 'gemini-1.5-flash',
+      aiMode: 'auto'
     },
 
     STORAGE_KEYS: {
