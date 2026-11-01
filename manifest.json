@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "MeetLedger – Google Meet Attendance & Meeting Analytics",
+  "version": "1.0.0",
+  "description": "Smart Meetings. Accurate Attendance. Complete Insights. Automated attendance tracking & analytics for Google Meet.",
+  "author": "Sumit Rathor",
+  "homepage_url": "https://github.com/sumitrathor1/meetledger-chrome-extension",
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://meet.google.com/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    },
+    "default_title": "MeetLedger Live Attendance"
+  },
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://meet.google.com/*"
+      ],
+      "css": [
+        "content/content.css"
+      ],
+      "js": [
+        "shared/constants.js",
+        "shared/time-utils.js",
+        "shared/identity.js",
+        "content/dom-adapter.js",
+        "content/participant-observer.js",
+        "content/attendance-engine.js",
+        "content/meet-detector.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/icons/*",
+        "assets/vendor/*"
+      ],
+      "matches": [
+        "https://meet.google.com/*"
+      ]
+    }
+  ]
+}
