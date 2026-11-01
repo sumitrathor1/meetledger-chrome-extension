@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#2563EB" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Container -->
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="url(#bgGrad)" filter="url(#shadow)"/>
+
+  <!-- Ledger Card Background -->
+  <rect x="22" y="22" width="84" height="84" rx="14" fill="#FFFFFF" fill-opacity="0.96"/>
+
+  <!-- Top Ledger Header Bar -->
+  <path d="M22 36 C22 28.268 28.268 22 36 22 L92 22 C99.732 22 106 28.268 106 36 L106 42 L22 42 Z" fill="#EEF2FF"/>
+
+  <!-- Three ledger dots / binder rings -->
+  <circle cx="36" cy="32" r="3.5" fill="#6366F1"/>
+  <circle cx="64" cy="32" r="3.5" fill="#6366F1"/>
+  <circle cx="92" cy="32" r="3.5" fill="#6366F1"/>
+
+  <!-- Ledger Grid / Analytics Lines -->
+  <!-- Line 1: User avatar + bar -->
+  <circle cx="38" cy="56" r="6" fill="#818CF8"/>
+  <rect x="50" y="53" width="34" height="6" rx="3" fill="#E2E8F0"/>
+  <!-- Status check -->
+  <circle cx="94" cy="56" r="5" fill="#10B981"/>
+  <path d="M91.5 56 L93.5 58 L96.5 54" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Line 2: User avatar + bar -->
+  <circle cx="38" cy="74" r="6" fill="#A5B4FC"/>
+  <rect x="50" y="71" width="26" height="6" rx="3" fill="#E2E8F0"/>
+  <!-- Status check -->
+  <circle cx="94" cy="74" r="5" fill="#10B981"/>
+  <path d="M91.5 74 L93.5 76 L96.5 72" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Line 3: Analytics mini bar graph at bottom -->
+  <rect x="36" y="94" width="8" height="6" rx="2" fill="#C7D2FE"/>
+  <rect x="48" y="90" width="8" height="10" rx="2" fill="#818CF8"/>
+  <rect x="60" y="86" width="8" height="14" rx="2" fill="#6366F1"/>
+  <rect x="72" y="82" width="8" height="18" rx="2" fill="#4F46E5"/>
+
+  <!-- Active Attendance Indicator Badge Floating Bottom Right -->
+  <circle cx="96" cy="94" r="14" fill="url(#accentGrad)" filter="url(#shadow)"/>
+  <path d="M90 94 L94 98 L102 89" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
