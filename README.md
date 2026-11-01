@@ -41,12 +41,21 @@ Unlike simple scraping scripts that only log who was present at a single moment,
 - **Participants Directory:** Cross-meeting student ledger displaying lifetime attendance stats and individual student histories.
 - **Light & Dark Themes:** Built-in modern theme switcher with full dark mode support.
 
-### 5. Multi-Surface UI & Companion Tools
-- **In-Meeting Floating HUD:** Unobtrusive, collapsible widget on `meet.google.com` showing live attendee counts, duration timer, quick scan, and pause/resume buttons.
-- **Chrome Extension Popup:** Fast glance card with present/absent counters, quick participant search, and one-click export.
-- **Chrome Side Panel:** Native live side-panel companion that sits beside Google Meet showing real-time join/leave activity feeds.
+### 5. MeetLedger AI – Intelligent Conversational Assistant
+- **Natural Language Attendance Intelligence:** Query attendance records naturally (e.g. *"How many meetings did Rahul attend?"*, *"Show Rahul's attendance history"*, *"Rahul kitni meetings me aaya?"*).
+- **Meeting Analytics & Comparisons:** Compare attendance performance between multiple students (e.g. *"Compare Rahul and Amit"*), query late arrivals, identify students below 75% attendance, and discover attendance extremes.
+- **Multilingual Understanding:** Fully supports English, Hindi, and Hinglish queries with contextual conversation follow-up memory (*"What about Amit?"*, *"What is his total duration?"*).
+- **100% Verified Real Data:** Calculations execute directly against browser IndexedDB records. The assistant strictly never hallucinates numbers, attendees, or dates.
+- **Provider-Independent Hybrid Architecture:** Operates 100% offline using a fast local NLP and query execution engine. Optionally connect a Google Gemini API Key in Settings for expanded natural conversation.
+- **Interactive Rich Cards & Direct Actions:** Answers are presented with rich metric cards, attendance history tables, side-by-side comparison cards, and one-click actions (*"Download Rahul's report"*).
+- **Built-in Offline Knowledge Base:** Instant answers on extension installation, roll number patterns, multi-meeting management, and CSV exports.
 
-### 6. Robust Export & Reporting
+### 6. Multi-Surface UI & Companion Tools
+- **In-Meeting Floating HUD:** Unobtrusive, collapsible widget on `meet.google.com` showing live attendee counts, duration timer, quick scan, and pause/resume buttons.
+- **Chrome Extension Popup:** Fast glance card with present/absent counters, quick participant search, one-click export, and quick AI launcher.
+- **Chrome Side Panel:** Native live side-panel companion that sits beside Google Meet showing real-time join/leave activity feeds and direct AI access.
+
+### 7. Robust Export & Reporting
 - **Excel & Google Sheets Compatible CSV:** Formatted with UTF-8 BOM (`\uFEFF`) and proper quoting for instant compatibility.
 - **Summary & Interval CSVs:** Export consolidated totals or granular timestamped session logs.
 - **JSON Export:** Full structured dataset backup.
@@ -94,6 +103,16 @@ meetledger-chrome-extension/
 │   ├── participants.js            # Global identity directory & merge tool
 │   ├── reports.js                 # Report generator & export workflows
 │   └── analytics.js               # Chart.js visualization engine
+├── ai/
+│   ├── ai-assistant.js            # Master conversational orchestrator & DOM controller
+│   ├── ai-query-engine.js         # Local database query execution engine
+│   ├── ai-intent-parser.js        # Multilingual intent & entity parser (EN/HI/Hinglish)
+│   ├── ai-context-manager.js      # Session memory & follow-up resolution
+│   ├── ai-security.js             # Allowlist validator & injection sanitizer
+│   ├── ai-knowledge-base.js       # Offline extension documentation & troubleshooting
+│   ├── ai-response-builder.js     # Rich UI card & ranked table generators
+│   ├── ai-suggestions.js          # Context-aware suggested question pills
+│   └── ai-api.js                  # Provider-independent Gemini & offline adapter
 ├── settings/
 │   ├── settings.html              # Dedicated settings page
 │   ├── settings.css               # Settings styling
@@ -109,7 +128,8 @@ meetledger-chrome-extension/
 │   ├── icons/                     # Crisp icons (16px, 32px, 48px, 128px, SVG)
 │   └── vendor/                    # Local vendor libraries (Chart.js, Lucide)
 ├── tests/
-│   └── test-core.js               # Automated unit test suite
+│   ├── test-core.js               # Automated core tracking & intervals test suite
+│   └── test-ai.js                 # Automated AI NLP, 15 queries & security test suite
 ├── reference/
 │   └── legacy-attendance-tracker.js # Preserved reference implementation
 ├── README.md                      # Product documentation
@@ -160,35 +180,16 @@ meetledger-chrome-extension/
 
 ## 🧪 Testing
 
-MeetLedger includes an automated test suite verifying manifest integrity, roll number extraction, interval summation, overlapping time merging, late arrival logic, and CSV exports:
+MeetLedger includes automated test suites covering manifest integrity, roll number extraction, interval summation, overlapping time merging, late arrival logic, CSV exports, multilingual AI intent parsing (English, Hindi, Hinglish), all 15 core conversational queries, contextual follow-up memory, security sanitization, and offline database execution:
 
 ```bash
 npm test
 ```
 
-Expected result:
-```
-=== RUNNING MEETLEDGER CORE TESTS ===
-[1. Manifest Integrity]
-  ✓ manifest.json is valid JSON with Manifest V3 and existing files
-[2. Identity & Enrollment Extraction]
-  ✓ extracts leading enrollment and name correctly
-  ✓ extracts bracketed roll number correctly
-  ✓ extracts parenthesized roll number correctly
-  ✓ does not mistake honorifics (Dr, Prof) as enrollment numbers
-  ✓ excludes host name (Sumit Rathor) case-insensitively
-  ✓ generates unique meeting session IDs for the same meeting code
-[3. Time Utilities & Interval Calculations]
-  ✓ formats durations accurately
-  ✓ calculates multi-session attendance duration correctly (Example from prompt)
-  ✓ merges overlapping intervals and avoids double counting
-  ✓ calculates attendance percentage accurately
-  ✓ detects late arrival correctly based on threshold
-[4. Export Engine]
-  ✓ generates summary CSV with UTF-8 BOM and correct headers
-  ✓ generates detailed intervals CSV with session breakdowns
-  ✓ generates valid JSON export
-=== TEST SUMMARY: 15 Passed, 0 Failed ===
+Or run individual suites:
+```bash
+npm run test:core   # Core tracker, time utils, exports & identity
+npm run test:ai     # AI assistant NLP, 15 core queries & query engine
 ```
 
 ---
