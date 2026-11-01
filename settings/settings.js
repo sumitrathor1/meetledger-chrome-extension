@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const gracePeriodInput = document.getElementById('opt-grace-period');
   const lateThresholdInput = document.getElementById('opt-late-threshold');
   const patternInput = document.getElementById('opt-enrollment-pattern');
+  const geminiKeyInput = document.getElementById('opt-gemini-key');
+  const aiModelSelect = document.getElementById('opt-ai-model');
   const testInput = document.getElementById('opt-test-input');
   const testOutput = document.getElementById('opt-test-output');
 
@@ -39,6 +41,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (gracePeriodInput) gracePeriodInput.value = s.leaveGracePeriod || 15;
     if (lateThresholdInput) lateThresholdInput.value = s.lateThresholdMinutes || 5;
     if (patternInput) patternInput.value = s.enrollmentPattern || '^([A-Z0-9]{6,16})\\s+(.+)$';
+    if (geminiKeyInput) geminiKeyInput.value = s.geminiApiKey || '';
+    if (aiModelSelect) aiModelSelect.value = s.aiModel || 'gemini-1.5-flash';
   }
 
   // Test Regex Pattern
@@ -75,7 +79,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         scanInterval: Math.max(1000, Number(scanIntervalInput.value) || 3000),
         leaveGracePeriod: Math.max(5, Number(gracePeriodInput.value) || 15),
         lateThresholdMinutes: Math.max(1, Number(lateThresholdInput.value) || 5),
-        enrollmentPattern: patternInput.value.trim()
+        enrollmentPattern: patternInput.value.trim(),
+        geminiApiKey: geminiKeyInput ? geminiKeyInput.value.trim() : '',
+        aiModel: aiModelSelect ? aiModelSelect.value : 'gemini-1.5-flash'
       };
 
       if (window.MeetLedgerStorage) {

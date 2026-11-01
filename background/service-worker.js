@@ -130,17 +130,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     case 'OPEN_DASHBOARD': {
-      const dashboardUrl = chrome.runtime.getURL('dashboard/dashboard.html');
-      chrome.tabs.query({ url: `${dashboardUrl}*` }, (tabs) => {
+      const pageHash = message.page ? `#${message.page}` : '';
+      const baseUrl = chrome.runtime.getURL('dashboard/dashboard.html');
+      const targetUrl = `${baseUrl}${pageHash}`;
+      chrome.tabs.query({ url: `${baseUrl}*` }, (tabs) => {
         if (tabs && tabs.length > 0) {
-          // Switch to existing tab
-          chrome.tabs.update(tabs[0].id, { active: true });
+          // Switch to existing tab and update URL if hash specified
+          chrome.tabs.update(tabs[0].id, { active: true, url: targetUrl });
           if (tabs[0].windowId) {
             chrome.windows.update(tabs[0].windowId, { focused: true });
           }
         } else {
           // Create new tab
-          chrome.tabs.create({ url: dashboardUrl });
+          chrome.tabs.create({ url: targetUrl });
         }
         sendResponse({ success: true });
       });

@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const activityFeed = document.getElementById('sp-activity-feed');
 
   const btnScan = document.getElementById('sp-btn-scan');
+  const btnAi = document.getElementById('sp-btn-ai');
   const btnDashboard = document.getElementById('sp-btn-dashboard');
   const btnTogglePause = document.getElementById('sp-btn-toggle-pause');
   const btnExport = document.getElementById('sp-btn-export');
@@ -32,6 +33,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (btnDashboard) {
     btnDashboard.addEventListener('click', () => {
       chrome.runtime.sendMessage({ action: 'OPEN_DASHBOARD' });
+    });
+  }
+
+  // Open AI Assistant in Dashboard
+  if (btnAi) {
+    btnAi.addEventListener('click', () => {
+      chrome.runtime.sendMessage({ action: 'OPEN_DASHBOARD', page: 'ai-assistant' });
     });
   }
 

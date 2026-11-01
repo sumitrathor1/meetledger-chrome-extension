@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const btnOpenDashboard = document.getElementById('btn-open-dashboard');
   const btnIdleDashboard = document.getElementById('btn-idle-dashboard');
+  const btnOpenAi = document.getElementById('btn-open-ai');
+  const linkAiAssistant = document.getElementById('link-ai-assistant');
   const btnLaunchMeet = document.getElementById('btn-launch-meet');
   const linkSidepanel = document.getElementById('link-sidepanel');
 
@@ -36,16 +38,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   let pollInterval = null;
 
   // Open Dashboard Handler
-  function openDashboard() {
+  function openDashboard(page = null) {
     if (chrome.runtime && chrome.runtime.sendMessage) {
-      chrome.runtime.sendMessage({ action: 'OPEN_DASHBOARD' });
+      chrome.runtime.sendMessage({ action: 'OPEN_DASHBOARD', page: page });
     } else {
-      window.open('../dashboard/dashboard.html', '_blank');
+      const url = page ? `../dashboard/dashboard.html#${page}` : '../dashboard/dashboard.html';
+      window.open(url, '_blank');
     }
   }
 
-  if (btnOpenDashboard) btnOpenDashboard.addEventListener('click', openDashboard);
-  if (btnIdleDashboard) btnIdleDashboard.addEventListener('click', openDashboard);
+  if (btnOpenDashboard) btnOpenDashboard.addEventListener('click', () => openDashboard());
+  if (btnIdleDashboard) btnIdleDashboard.addEventListener('click', () => openDashboard());
+  if (btnOpenAi) btnOpenAi.addEventListener('click', () => openDashboard('ai-assistant'));
+  if (linkAiAssistant) {
+    linkAiAssistant.addEventListener('click', (e) => {
+      e.preventDefault();
+      openDashboard('ai-assistant');
+    });
+  }
 
   // Launch Meet
   if (btnLaunchMeet) {
