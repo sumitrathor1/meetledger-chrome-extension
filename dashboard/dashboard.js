@@ -36,6 +36,7 @@
       if (global.MeetLedgerMeetings) global.MeetLedgerMeetings.init();
       if (global.MeetLedgerParticipants) global.MeetLedgerParticipants.init();
       if (global.MeetLedgerReports) global.MeetLedgerReports.init();
+      if (global.MeetLedgerAI) await global.MeetLedgerAI.init();
 
       // 6. Settings Setup
       this.initSettings();
@@ -49,7 +50,13 @@
       // 9. Load Overview Data
       await this.loadOverview();
 
-      // 10. Live Meeting Check
+      // 10. Check Deep Link Hash
+      const initialHash = (window.location.hash || '').replace('#', '');
+      if (initialHash && document.getElementById(`page-${initialHash}`)) {
+        this.navigateTo(initialHash);
+      }
+
+      // 11. Live Meeting Check
       this.checkLiveMeeting();
       liveMeetingPollInterval = setInterval(() => this.checkLiveMeeting(), 3000);
 
@@ -100,6 +107,7 @@
         participants: 'Participants Directory',
         reports: 'Attendance Reports & Export',
         analytics: 'Analytics & Insights',
+        'ai-assistant': 'MeetLedger AI Assistant',
         settings: 'Settings & Storage',
         about: 'About MeetLedger'
       };
@@ -114,6 +122,12 @@
       else if (pageName === 'participants') global.MeetLedgerParticipants.loadParticipants();
       else if (pageName === 'analytics') global.MeetLedgerAnalytics.renderAdvancedAnalytics();
       else if (pageName === 'reports') global.MeetLedgerReports.generatePreview();
+      else if (pageName === 'ai-assistant') {
+        if (global.MeetLedgerAI) {
+          global.MeetLedgerAI.renderConversation();
+          global.MeetLedgerAI.renderSidebar();
+        }
+      }
       else if (pageName === 'live') this.renderLiveMeetingPage();
 
       // Refresh icons in newly shown DOM
@@ -288,6 +302,8 @@
       const gracePeriodInput = document.getElementById('setting-grace-period');
       const lateThresholdInput = document.getElementById('setting-late-threshold');
       const patternInput = document.getElementById('setting-enrollment-pattern');
+      const apiKeyInput = document.getElementById('setting-gemini-api-key');
+      const aiModelSelect = document.getElementById('setting-ai-model');
       const sidebarHost = document.getElementById('sidebar-host-name');
 
       if (hostNameInput) hostNameInput.value = settings.hostName || '';
@@ -299,6 +315,25 @@
       if (gracePeriodInput) gracePeriodInput.value = settings.leaveGracePeriod || 15;
       if (lateThresholdInput) lateThresholdInput.value = settings.lateThresholdMinutes || 5;
       if (patternInput) patternInput.value = settings.enrollmentPattern || '^([A-Z0-9]{6,16})\\s+(.+)$';
+      if (apiKeyInput) apiKeyInput.value = settings.geminiApiKey || '';
+      if (aiModelSelect) aiModelSelect.value = settings.aiModel || 'gemini-1.5-flash';
+
+      // Clear AI Memory Handler
+      const btnClearAiMem = document.getElementById('btn-clear-ai-memory');
+      if (btnClearAiMem) {
+        btnClearAiMem.addEventListener('click', () => {
+          if (confirm('Clear all AI conversation history and memory?')) {
+            if (global.MeetLedgerAIContext) {
+              global.MeetLedgerAIContext.clearAllHistory();
+            }
+            if (global.MeetLedgerAI) {
+              global.MeetLedgerAI.renderConversation();
+              global.MeetLedgerAI.renderSidebar();
+            }
+            Dashboard.showToast('AI conversation history cleared.');
+          }
+        });
+      }
 
       // Live Regex Tester
       const testInput = document.getElementById('test-enrollment-input');
@@ -338,7 +373,9 @@
             scanInterval: Math.max(1000, Number(scanIntervalInput.value) || 3000),
             leaveGracePeriod: Math.max(5, Number(gracePeriodInput.value) || 15),
             lateThresholdMinutes: Math.max(1, Number(lateThresholdInput.value) || 5),
-            enrollmentPattern: patternInput.value.trim()
+            enrollmentPattern: patternInput.value.trim(),
+            geminiApiKey: (apiKeyInput ? apiKeyInput.value.trim() : ''),
+            aiModel: (aiModelSelect ? aiModelSelect.value : 'gemini-1.5-flash')
           };
 
           await global.MeetLedgerStorage.saveSettings(updates);
