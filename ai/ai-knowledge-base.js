@@ -174,3 +174,4 @@ MeetLedger automatically extracts university and college roll numbers:
   }
   global.MeetLedgerKnowledgeBase = KnowledgeBase;
 })(typeof window !== 'undefined' ? window : this);
+
