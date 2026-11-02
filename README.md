@@ -235,6 +235,9 @@ Contributions, bug reports, and suggestions are welcome!
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for more details.
 
-**Author:** [Sumit Rathor](https://github.com/sumitrathor1)  
-**Project Link:** [https://github.com/sumitrathor1/meetledger-chrome-extension](https://github.com/sumitrathor1/meetledger-chrome-extension)
+**Author & Developer:** [Sumit Rathor](https://sumitrathor.rf.gd/)  
+**Portfolio:** [https://sumitrathor.rf.gd/](https://sumitrathor.rf.gd/)  
+**GitHub:** [https://github.com/sumitrathor1](https://github.com/sumitrathor1)  
+**Project Link:** [https://github.com/sumitrathor1/meetledger-chrome-extension](https://github.com/sumitrathor1/meetledger-chrome-extension)  
+**Copyright:** &copy; 2026 Sumit Rathor. All rights reserved.
 

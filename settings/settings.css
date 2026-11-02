@@ -237,3 +237,23 @@ body {
   transform: translateY(0);
 }
 
+/* Settings Footer */
+.settings-footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.settings-footer a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.settings-footer a:hover {
+  text-decoration: underline;
+}
+

@@ -9,7 +9,9 @@
     APP_NAME: 'MeetLedger',
     VERSION: '1.0.0',
     AUTHOR: 'Sumit Rathor',
+    PORTFOLIO_URL: 'https://sumitrathor.rf.gd/',
     GITHUB_URL: 'https://github.com/sumitrathor1/meetledger-chrome-extension',
+    COPYRIGHT: '© 2026 Sumit Rathor. All rights reserved.',
 
     DEFAULT_SETTINGS: {
       hostName: 'Sumit Rathor',

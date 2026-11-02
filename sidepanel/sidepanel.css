@@ -411,3 +411,22 @@ body {
   background: var(--border-light);
 }
 
+.sp-dev-credit {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-light);
+  background: var(--bg-card);
+  padding: 4px 10px 8px 10px;
+  border-top: 1px dashed var(--border-light);
+}
+
+.sp-dev-credit a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.sp-dev-credit a:hover {
+  text-decoration: underline;
+}
+

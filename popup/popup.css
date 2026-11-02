@@ -469,13 +469,20 @@ body {
 /* Footer */
 .popup-footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 14px;
   border-top: 1px solid var(--border);
   font-size: 11px;
   color: var(--text-muted);
   background: var(--bg-card);
+}
+
+.popup-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .popup-footer a {
@@ -486,5 +493,25 @@ body {
 
 .popup-footer a:hover {
   text-decoration: underline;
+}
+
+.popup-footer .dot {
+  color: var(--text-light, #94a3b8);
+}
+
+.popup-footer-credit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text-light);
+  border-top: 1px dashed var(--border-light, #f1f5f9);
+  padding-top: 4px;
+  width: 100%;
+}
+
+.popup-footer-credit a {
+  color: var(--primary);
+  font-weight: 600;
 }
 
